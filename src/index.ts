@@ -1,5 +1,9 @@
+import { Config, setUser, readConfig } from "./config.ts";
+
 function main() {
-    console.log("Hello, world!");
+    setUser("Erik");
+    const currentConfig = readConfig();
+    console.log(currentConfig);
 }
 
 main();
