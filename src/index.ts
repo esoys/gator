@@ -1,10 +1,13 @@
 import { Config, setUser, readConfig } from "./config.ts";
-import { CommandHandler, CommandRegistry, handlerLogin, registerCommand, runCommand } from "./commands.ts";
+import { CommandHandler, CommandRegistry, handlerLogin, registerCommand, getUsers, register, runCommand, reset} from "./commands.ts";
 
 
-function main() {
+async function main() {
     let registry: CommandRegistry = {};
     registerCommand(registry, "login", handlerLogin);
+    registerCommand(registry, "register", register);
+    registerCommand(registry, "reset", reset);
+    registerCommand(registry, "users", getUsers);
     const args = process.argv.slice(2);
 
     if (args.length === 0) {
@@ -15,7 +18,7 @@ function main() {
     const [cmdName, ...cmdArgs] = args;
 
     try {
-        runCommand(registry, cmdName, ...cmdArgs);
+        await runCommand(registry, cmdName, ...cmdArgs);
     } catch (err) {
         if (err instanceof Error) {
             console.error(err.message);
@@ -24,6 +27,7 @@ function main() {
         };
         process.exit(1);
     };
+    process.exit(0);
 };
 
 main();
