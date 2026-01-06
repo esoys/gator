@@ -1,5 +1,7 @@
 import { Config, setUser, readConfig } from "./config.ts";
 import { getUser, createUser, resetDb, listUsers } from "./lib/db/queries/users.ts";
+import { fetchFeed } from "./lib/rss/rss_feed.ts";
+
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 export type CommandRegistry = Record<string, CommandHandler>;
@@ -53,12 +55,16 @@ export async function getUsers(cmdName: string, ...args: string[]) {
 };
 
 
-
 export async function reset(cmdName: string, ...args: string[]) {
     await resetDb();
     console.log("DB has been reset");
 };
 
+
+export async function agg(cmdName: string, ...args: string[]) {
+    const rssFeedData = await fetchFeed("https://www.wagslane.dev/index.xml");
+    console.log(JSON.stringify(rssFeedData, null, 2));
+};
 
 
 export async function registerCommand(registry: CommandRegistry, cmdName: string, handler: CommandHandler): Promise<void> {
