@@ -1,6 +1,8 @@
 import { Config, setUser, readConfig } from "./config.ts";
 import { getUser, createUser, resetDb, listUsers } from "./lib/db/queries/users.ts";
+import { createFeed } from "./lib/db/queries/feeds.ts";
 import { fetchFeed } from "./lib/rss/rss_feed.ts";
+import { Feed, User } from "./lib/db/schema.ts";
 
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
@@ -22,6 +24,36 @@ export async function handlerLogin(cmdName: string, ...args: string[]): Promise<
     };
 };
 
+
+export async function addFeed(cmdName: string, ...args: string[]) {
+    if (args.length !== 2) {
+        throw new Error(`usage: ${cmdName} <feed_name> <url>`);
+    }
+    const feedName = args[0];
+    const url = args[1];
+
+    const currentUser = readConfig().currentUserName; 
+    const userData = await getUser(currentUser);
+
+    if (!userData) {
+        throw new Error(`User ${currentUser} not found`);
+    }
+
+    const feed = await createFeed(feedName, url, userData.id);
+
+    if (!feed) {
+        throw new Error("couldn't create feed");
+    }
+    printFeed(feed, userData);
+};
+
+
+function printFeed(feed: Feed, user: User) {
+    console.log(`- ID:   ${feed.id}`);
+    console.log(`- Name: ${feed.name}`);
+    console.log(`- URL:  ${feed.url}`);
+    console.log(`- User: ${user.name}`);
+}
 
 export async function register(cmdName: string, ...args: string[]): Promise<void> {
     if (args.length !== 1) { throw new Error(`usage: ${cmdName} <name>`) };
