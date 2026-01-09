@@ -1,6 +1,6 @@
 import { Config, setUser, readConfig } from "./config.ts";
 import { getUser, createUser, resetDb, listUsers } from "./lib/db/queries/users.ts";
-import { createFeed } from "./lib/db/queries/feeds.ts";
+import { createFeed, listFeeds } from "./lib/db/queries/feeds.ts";
 import { fetchFeed } from "./lib/rss/rss_feed.ts";
 import { Feed, User } from "./lib/db/schema.ts";
 
@@ -55,6 +55,20 @@ function printFeed(feed: Feed, user: User) {
     console.log(`- User: ${user.name}`);
 }
 
+
+export async function getFeeds(cmdName: string, ...args: string[]) {
+    if (args.length !== 0) {
+        throw new Error(`usage: only command without additional arguments`);
+    }
+    const feeds = await listFeeds();
+    
+    for (const feed of feeds) {
+        console.log(`- Feed:       ${feed.name}`);
+        console.log(`- URL:        ${feed.url}`);
+        console.log(`- created by: ${feed.userName}`);
+    };
+}
+
 export async function register(cmdName: string, ...args: string[]): Promise<void> {
     if (args.length !== 1) { throw new Error(`usage: ${cmdName} <name>`) };
     const name = args[0];
@@ -65,7 +79,7 @@ export async function register(cmdName: string, ...args: string[]): Promise<void
     } else {
         const created = await createUser(name); 
         setUser(created.name);
-        console.log(`Created User: ${created}`);
+        console.log(`Created User: ${created.name}`);
     }
 };
 
