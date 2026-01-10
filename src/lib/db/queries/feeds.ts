@@ -1,5 +1,5 @@
 import { db } from "..";
-import { feeds, users } from "../schema";
+import { feeds, users } from "../schema.ts";
 import { eq } from "drizzle-orm";
 import { uuid } from "drizzle-orm/pg-core";
 
@@ -12,6 +12,15 @@ export async function createFeed(name: string, url: string, userId: string) {
     return result;
 }
 
+export async function getFeedByUrl(url: string) {
+    const [result] = await db.select().from(feeds).where(eq(feeds.url, url));
+
+    if (result) {
+        return result;
+    } else {
+        throw new Error("feed not found");
+    }
+}
 
 export async function listFeeds() {
     const result = await db.select({

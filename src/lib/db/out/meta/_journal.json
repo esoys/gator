@@ -15,6 +15,13 @@
       "when": 1767892628098,
       "tag": "0001_smiling_bucky",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1767994728767,
+      "tag": "0002_square_forge",
+      "breakpoints": true
     }
   ]
 }

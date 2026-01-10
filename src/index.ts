@@ -1,5 +1,6 @@
 import { Config, setUser, readConfig } from "./config.ts";
-import { CommandHandler, CommandRegistry, handlerLogin, registerCommand, getUsers, register, runCommand, reset, agg, addFeed, getFeeds } from "./commands.ts";
+import { CommandHandler, CommandRegistry, handlerLogin, followingCommand, followHandler, registerCommand, getUsers, register, runCommand, reset, agg, addFeed, getFeeds, unfollowCommand } from "./commands.ts";
+import { middlewareLoggedIn } from "./login.ts";
 
 
 async function main() {
@@ -9,8 +10,11 @@ async function main() {
     registerCommand(registry, "reset", reset);
     registerCommand(registry, "users", getUsers);
     registerCommand(registry, "agg", agg);
-    registerCommand(registry, "addfeed", addFeed);
     registerCommand(registry, "feeds", getFeeds);
+    registerCommand(registry, "addfeed", middlewareLoggedIn(addFeed));
+    registerCommand(registry, "follow", middlewareLoggedIn(followHandler));
+    registerCommand(registry, "following", middlewareLoggedIn(followingCommand));
+    registerCommand(registry, "unfollow", middlewareLoggedIn(unfollowCommand));
     const args = process.argv.slice(2);
 
     if (args.length === 0) {
